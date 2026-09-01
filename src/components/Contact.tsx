@@ -45,7 +45,7 @@ export function Contact() {
     'Acima de R$ 10.000'
   ];
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
     if (!formData.name.trim() || !formData.email.trim() || !formData.whatsapp.trim()) {
@@ -56,36 +56,21 @@ export function Contact() {
 
     setStatus('submitting');
 
-    try {
-      // Disparo automático e direto para o seu e-mail cfwebstudiocarlosfelipe@gmail.com
-      const response = await fetch('https://formsubmit.co/ajax/cfwebstudiocarlosfelipe@gmail.com', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          _subject: `🚀 Novo Pedido de Orçamento: ${formData.projectType} - ${formData.name}`,
-          _template: 'table',
-          'Nome do Solicitante': formData.name,
-          'Empresa / Marca': formData.company || 'Não informada',
-          'E-mail de Contato': formData.email,
-          'WhatsApp': formData.whatsapp,
-          'Tipo de Projeto': formData.projectType,
-          'Faixa de Investimento': formData.budgetRange,
-          'Mensagem / Detalhes': formData.message || 'Sem observações adicionais.'
-        })
-      });
+    const formattedMsg = `Olá, Carlos & Felipe! Gostaria de um orçamento para o meu projeto:
+*Nome:* ${formData.name || 'Não informado'}
+*Empresa:* ${formData.company || 'Não informado'}
+*E-mail:* ${formData.email || 'Não informado'}
+*WhatsApp:* ${formData.whatsapp || 'Não informado'}
+*Tipo de Projeto:* ${formData.projectType}
+*Faixa de Investimento:* ${formData.budgetRange}
+*Detalhes:* ${formData.message || 'Gostaria de agendar uma conversa sobre meu projeto.'}`;
 
-      if (response.ok) {
-        setStatus('success');
-      } else {
-        throw new Error('Falha ao enviar mensagem.');
-      }
-    } catch {
-      setStatus('error');
-      setErrorMessage('Ocorreu um erro ao enviar. Por favor, tente pelo WhatsApp ao lado.');
-    }
+    const url = `https://wa.me/${BRAND.phone}?text=${encodeURIComponent(formattedMsg)}`;
+
+    setTimeout(() => {
+      setStatus('success');
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }, 200);
   };
 
   const handleSendViaWhatsApp = () => {
@@ -121,10 +106,10 @@ export function Contact() {
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <h3 className="text-2xl font-bold text-white font-display">
-                  E-mail enviado com sucesso!
+                  Mensagem estruturada pronta!
                 </h3>
                 <p className="text-sm text-slate-300 max-w-md mx-auto leading-relaxed">
-                  Obrigado pelo contato, <strong className="text-white">{formData.name}</strong>. Sua solicitação foi entregue diretamente na nossa caixa de entrada (<span className="text-blue-400">{BRAND.email}</span>). Retornaremos em até 24 horas úteis!
+                  Obrigado pelo contato, <strong className="text-white">{formData.name}</strong>. O WhatsApp foi aberto com os dados do seu pedido prontos para envio.
                 </p>
 
                 <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -136,9 +121,11 @@ export function Contact() {
                     icon={<MessageSquare className="w-4 h-4" />}
                     iconPosition="left"
                   >
-                    Falar também no WhatsApp
+                    Reabrir no WhatsApp
                   </Button>
+                </div>
 
+                <div className="pt-2">
                   <button
                     onClick={() => {
                       setStatus('idle');
@@ -288,26 +275,17 @@ export function Contact() {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="space-y-3 pt-2">
+                <div className="pt-2">
                   <Button
                     type="submit"
                     variant="primary"
                     size="lg"
                     disabled={status === 'submitting'}
-                    className="w-full"
+                    className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-3.5 rounded-xl shadow-lg shadow-blue-600/20"
                     icon={<Send className="w-4 h-4" />}
                   >
-                    {status === 'submitting' ? 'Enviando e-mail...' : 'Enviar projeto'}
+                    {status === 'submitting' ? 'Preparando WhatsApp...' : 'Enviar projeto'}
                   </Button>
-
-                  <button
-                    type="button"
-                    onClick={handleSendViaWhatsApp}
-                    className="w-full py-2.5 px-4 rounded-lg bg-emerald-950/40 border border-emerald-500/30 hover:border-emerald-500/60 hover:bg-emerald-900/30 text-emerald-300 text-xs font-medium inline-flex items-center justify-center gap-2 transition-all cursor-pointer"
-                  >
-                    <MessageSquare className="w-4 h-4 text-emerald-400" />
-                    <span>Prefere enviar direto pelo WhatsApp? Clique aqui</span>
-                  </button>
                 </div>
               </form>
             )}
@@ -324,7 +302,7 @@ export function Contact() {
                 </div>
                 <div>
                   <h3 className="text-white font-bold text-base font-display">
-                    Contato Direto por E-mail
+                    Contato por E-mail
                   </h3>
                   <p className="text-xs text-slate-400">{BRAND.email}</p>
                 </div>
@@ -354,7 +332,7 @@ Aguardando retorno, obrigado!`)}`}
                     className="w-full border-blue-500/40 text-blue-300 hover:text-white hover:bg-blue-600/20"
                     icon={<ArrowUpRight className="w-4 h-4" />}
                   >
-                    Escrever E-mail Manualmente
+                    Escrever E-mail Formatado
                   </Button>
                 </a>
               </div>
