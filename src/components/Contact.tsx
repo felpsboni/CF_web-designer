@@ -45,45 +45,7 @@ export function Contact() {
     'Acima de R$ 10.000'
   ];
 
-  const getFormattedEmailUrl = () => {
-    const subject = `[Solicitação de Orçamento] ${formData.projectType} - ${formData.name || 'Novo Cliente'}`;
-    const body = `Olá, equipe da CF Web Studio (Carlos & Felipe)!
-
-Gostaria de solicitar uma análise e orçamento para a criação de um novo projeto web.
-
-📋 DADOS DO SOLICITANTE:
-• Nome: ${formData.name || 'Não informado'}
-• Empresa / Marca: ${formData.company || 'Não informada'}
-• E-mail para retorno: ${formData.email || 'Não informado'}
-• WhatsApp para contato: ${formData.whatsapp || 'Não informado'}
-
-🚀 ESPECIFICAÇÕES DO PROJETO:
-• Tipo de Projeto: ${formData.projectType}
-• Faixa de Investimento Estimada: ${formData.budgetRange}
-
-📝 DETALHES & OBJETIVOS:
-${formData.message || 'Gostaria de agendar uma reunião ou receber uma proposta personalizada para o meu negócio.'}
-
----
-Mensagem enviada via formulário do site oficial da CF Web Studio.`;
-
-    return `mailto:${BRAND.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  };
-
-  const getFormattedWhatsAppUrl = () => {
-    const formattedMsg = `Olá, Carlos & Felipe! Gostaria de um orçamento para o meu projeto:
-*Nome:* ${formData.name || 'Não informado'}
-*Empresa:* ${formData.company || 'Não informado'}
-*E-mail:* ${formData.email || 'Não informado'}
-*WhatsApp:* ${formData.whatsapp || 'Não informado'}
-*Tipo de Projeto:* ${formData.projectType}
-*Faixa de Investimento:* ${formData.budgetRange}
-*Detalhes:* ${formData.message || 'Gostaria de agendar uma conversa sobre meu projeto.'}`;
-
-    return `https://wa.me/${BRAND.phone}?text=${encodeURIComponent(formattedMsg)}`;
-  };
-
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     if (!formData.name.trim() || !formData.email.trim() || !formData.whatsapp.trim()) {
@@ -94,22 +56,50 @@ Mensagem enviada via formulário do site oficial da CF Web Studio.`;
 
     setStatus('submitting');
 
-    const emailUrl = getFormattedEmailUrl();
+    try {
+      // Disparo automático e direto para o seu e-mail cfwebstudiocarlosfelipe@gmail.com
+      const response = await fetch('https://formsubmit.co/ajax/cfwebstudiocarlosfelipe@gmail.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          _subject: `🚀 Novo Pedido de Orçamento: ${formData.projectType} - ${formData.name}`,
+          _template: 'table',
+          'Nome do Solicitante': formData.name,
+          'Empresa / Marca': formData.company || 'Não informada',
+          'E-mail de Contato': formData.email,
+          'WhatsApp': formData.whatsapp,
+          'Tipo de Projeto': formData.projectType,
+          'Faixa de Investimento': formData.budgetRange,
+          'Mensagem / Detalhes': formData.message || 'Sem observações adicionais.'
+        })
+      });
 
-    setTimeout(() => {
-      setStatus('success');
-      window.location.href = emailUrl;
-    }, 300);
+      if (response.ok) {
+        setStatus('success');
+      } else {
+        throw new Error('Falha ao enviar mensagem.');
+      }
+    } catch {
+      setStatus('error');
+      setErrorMessage('Ocorreu um erro ao enviar. Por favor, tente pelo WhatsApp ao lado.');
+    }
   };
 
   const handleSendViaWhatsApp = () => {
-    const url = getFormattedWhatsAppUrl();
-    window.open(url, '_blank', 'noopener,noreferrer');
-  };
+    const formattedMsg = `Olá, Carlos & Felipe! Gostaria de um orçamento para o meu projeto:
+*Nome:* ${formData.name || 'Não informado'}
+*Empresa:* ${formData.company || 'Não informado'}
+*E-mail:* ${formData.email || 'Não informado'}
+*WhatsApp:* ${formData.whatsapp || 'Não informado'}
+*Tipo de Projeto:* ${formData.projectType}
+*Faixa de Investimento:* ${formData.budgetRange}
+*Detalhes:* ${formData.message || 'Gostaria de agendar uma conversa sobre meu projeto.'}`;
 
-  const handleSendViaEmail = () => {
-    const url = getFormattedEmailUrl();
-    window.location.href = url;
+    const url = `https://wa.me/${BRAND.phone}?text=${encodeURIComponent(formattedMsg)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -131,24 +121,13 @@ Mensagem enviada via formulário do site oficial da CF Web Studio.`;
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <h3 className="text-2xl font-bold text-white font-display">
-                  Mensagem Estruturada Pronta!
+                  E-mail enviado com sucesso!
                 </h3>
                 <p className="text-sm text-slate-300 max-w-md mx-auto leading-relaxed">
-                  Obrigado pelo contato, <strong className="text-white">{formData.name}</strong>. Seu cliente de e-mail foi aberto com todos os detalhes formatados profissionalmente.
+                  Obrigado pelo contato, <strong className="text-white">{formData.name}</strong>. Sua solicitação foi entregue diretamente na nossa caixa de entrada (<span className="text-blue-400">{BRAND.email}</span>). Retornaremos em até 24 horas úteis!
                 </p>
 
                 <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-center gap-3">
-                  <Button
-                    variant="primary"
-                    size="md"
-                    onClick={handleSendViaEmail}
-                    className="bg-blue-600 hover:bg-blue-500 border-blue-400/40 text-white"
-                    icon={<Mail className="w-4 h-4" />}
-                    iconPosition="left"
-                  >
-                    Reabrir E-mail
-                  </Button>
-
                   <Button
                     variant="primary"
                     size="md"
@@ -157,11 +136,9 @@ Mensagem enviada via formulário do site oficial da CF Web Studio.`;
                     icon={<MessageSquare className="w-4 h-4" />}
                     iconPosition="left"
                   >
-                    Enviar também no WhatsApp
+                    Falar também no WhatsApp
                   </Button>
-                </div>
 
-                <div className="pt-2">
                   <button
                     onClick={() => {
                       setStatus('idle');
@@ -215,7 +192,7 @@ Mensagem enviada via formulário do site oficial da CF Web Studio.`;
                     <input
                       id="contact-company"
                       type="text"
-                      placeholder="Ex: Pizzaria Forno Nobre, Barber Club, Escritório..."
+                      placeholder="Ex: Pizzaria Forno Nobre, Barber Club..."
                       value={formData.company}
                       onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                       className="w-full px-3.5 py-2.5 rounded-lg bg-[#040813] border border-slate-700 text-white text-sm placeholder:text-slate-500 focus:border-blue-500 focus:outline-none transition-colors"
@@ -320,7 +297,7 @@ Mensagem enviada via formulário do site oficial da CF Web Studio.`;
                     className="w-full"
                     icon={<Send className="w-4 h-4" />}
                   >
-                    {status === 'submitting' ? 'Preparando e-mail...' : 'Enviar por E-mail'}
+                    {status === 'submitting' ? 'Enviando e-mail...' : 'Enviar projeto'}
                   </Button>
 
                   <button
@@ -377,7 +354,7 @@ Aguardando retorno, obrigado!`)}`}
                     className="w-full border-blue-500/40 text-blue-300 hover:text-white hover:bg-blue-600/20"
                     icon={<ArrowUpRight className="w-4 h-4" />}
                   >
-                    Escrever E-mail Formatado
+                    Escrever E-mail Manualmente
                   </Button>
                 </a>
               </div>
@@ -420,7 +397,7 @@ Aguardando retorno, obrigado!`)}`}
               </div>
             </div>
 
-            {/* Quick Commitments / Guarantees */}
+            {/* Commitments */}
             <div className="p-6 rounded-2xl bg-[#081224] border border-slate-800 space-y-4 text-xs text-slate-300">
               <div className="flex items-start gap-3">
                 <Clock className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
