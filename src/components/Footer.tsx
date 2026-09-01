@@ -1,20 +1,25 @@
 import { useState, MouseEvent } from 'react';
-import { MessageSquare, ShieldCheck, ArrowUp, X, FileText } from 'lucide-react';
+import { MessageSquare, ShieldCheck, ArrowUp, X, FileText, Instagram, ExternalLink } from 'lucide-react';
 import { Container } from './common/Container';
 import { BRAND } from '../data/mockData';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
-  const [legalModal, setLegalModal] = useState<'terms' | 'privacy' | null>(null);
+  const [modalType, setModalType] = useState<'privacy' | 'terms' | null>(null);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const navLinks = [
-    { name: 'Início', href: '#inicio' },
-    { name: 'Sobre', href: '#sobre' },
-    { name: 'Serviços', href: '#servicos' },
-    { name: 'Projetos', href: '#projetos' },
-    { name: 'Processo', href: '#processo' },
-    { name: 'FAQ', href: '#faq' },
-    { name: 'Contato', href: '#contato' }
+    { label: 'Sobre', href: '#sobre' },
+    { label: 'Serviços', href: '#servicos' },
+    { label: 'Diferenciais', href: '#diferenciais' },
+    { label: 'Projetos', href: '#portfolio' },
+    { label: 'Processo', href: '#processo' },
+    { label: 'Depoimentos', href: '#depoimentos' },
+    { label: 'FAQ', href: '#faq' },
+    { label: 'Contato', href: '#contato' },
   ];
 
   const handleNavClick = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -25,53 +30,53 @@ export function Footer() {
     }
   };
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   return (
-    <footer className="bg-[#02050c] text-slate-400 text-sm border-t border-slate-800/80 pt-16 pb-12 relative">
-      <Container>
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-slate-800/80">
-          
-          {/* Brand & Signature */}
+    <footer className="bg-[#03060d] border-t border-slate-800/80 pt-16 pb-12 relative overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[250px] bg-blue-600/5 rounded-full blur-3xl pointer-events-none" />
+
+      <Container className="relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-12 pb-12 border-b border-slate-800/60">
+          {/* Brand Info */}
           <div className="md:col-span-5 space-y-4">
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2.5">
-                <span className="w-3 h-3 rounded-sm bg-blue-500 shadow-[0_0_10px_#3b82f6]" />
-                <span className="font-display font-extrabold text-xl tracking-tight text-white">
-                  CF WEB STUDIO
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold font-display shadow-md shadow-blue-500/20">
+                CF
+              </div>
+              <div className="flex flex-col">
+                <span className="font-display font-bold text-lg text-white tracking-tight">
+                  CF Web Studio
+                </span>
+                <span className="text-[11px] text-blue-400 font-medium -mt-1 tracking-wider uppercase">
+                  Carlos & Felipe
                 </span>
               </div>
-              <span className="text-xs tracking-wider text-slate-400 uppercase ml-5.5 mt-0.5">
-                Carlos & Felipe — Web Design e Desenvolvimento
-              </span>
             </div>
 
-            <p className="text-sm text-slate-300 leading-relaxed max-w-sm">
-              Experiências digitais desenvolvidas para empresas que valorizam presença, tecnologia e crescimento.
+            <p className="text-slate-400 text-sm max-w-sm leading-relaxed">
+              Desenvolvimento de sites institucionais, landing pages e soluções web personalizadas para empresas que buscam autoridade e resultados reais.
             </p>
 
-            <div className="flex items-center gap-2 text-xs text-slate-400 pt-1">
-              <ShieldCheck className="w-4 h-4 text-blue-400 shrink-0" />
+            <div className="flex items-center gap-2 pt-1 text-xs text-slate-400">
+              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>{BRAND.coverage}</span>
             </div>
           </div>
 
-          {/* Quick Navigation Links */}
+          {/* Quick Nav */}
           <div className="md:col-span-4 space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">
-              Navegação
+              Navegação Rápida
             </h4>
-            <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="grid grid-cols-2 gap-2 text-sm">
               {navLinks.map((link) => (
                 <a
-                  key={link.name}
+                  key={link.href}
                   href={link.href}
                   onClick={(e) => handleNavClick(e, link.href)}
-                  className="text-slate-300 hover:text-white transition-colors py-1"
+                  className="text-slate-400 hover:text-blue-400 transition-colors py-0.5"
                 >
-                  {link.name}
+                  {link.label}
                 </a>
               ))}
             </div>
@@ -80,115 +85,142 @@ export function Footer() {
           {/* Social & Contact Handover */}
           <div className="md:col-span-3 space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">
-              Conectar
+              Conectar & Redes
             </h4>
             <div className="flex flex-col gap-2.5">
+              <a
+                href={BRAND.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Acompanhe a CF Web Studio no Instagram"
+                className="group inline-flex items-center justify-between px-3 py-2.5 rounded-lg bg-[#081224] border border-slate-800 hover:border-pink-500/50 hover:bg-slate-900/90 text-xs text-slate-200 hover:text-white transition-all"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-6 h-6 rounded-md bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 flex items-center justify-center text-white shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                    <Instagram className="w-3.5 h-3.5" />
+                  </div>
+                  <div className="flex flex-col text-left">
+                    <span className="font-semibold text-white group-hover:text-pink-300 transition-colors">Instagram</span>
+                    <span className="text-[10px] text-slate-400">{BRAND.instagramDisplay}</span>
+                  </div>
+                </div>
+                <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-pink-400 transition-colors" />
+              </a>
+
               <a
                 href={BRAND.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-[#081224] border border-slate-800 hover:border-emerald-500/50 text-xs text-slate-200 hover:text-white transition-all"
+                aria-label="Atendimento via WhatsApp com a CF Web Studio"
+                className="inline-flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-[#081224] border border-slate-800 hover:border-emerald-500/50 hover:bg-slate-900/90 text-xs text-slate-200 hover:text-white transition-all"
               >
-                <MessageSquare className="w-4 h-4 text-emerald-400" />
-                <span>Atendimento via WhatsApp</span>
+                <div className="w-6 h-6 rounded-md bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
+                  <MessageSquare className="w-3.5 h-3.5" />
+                </div>
+                <div className="flex flex-col text-left">
+                  <span className="font-semibold text-white">WhatsApp</span>
+                  <span className="text-[10px] text-slate-400">{BRAND.phoneDisplay}</span>
+                </div>
               </a>
             </div>
           </div>
-
         </div>
 
-        {/* Bottom Bar: Copyright & Legal */}
+        {/* Bottom credits & Legal */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-          <p>
-            &copy; {currentYear} CF Web Studio. Todos os direitos reservados.
-          </p>
-
-          <div className="flex items-center gap-6">
-            <button
-              onClick={() => setLegalModal('privacy')}
-              className="hover:text-slate-200 transition-colors underline cursor-pointer"
-            >
-              Política de Privacidade
-            </button>
-            <button
-              onClick={() => setLegalModal('terms')}
-              className="hover:text-slate-200 transition-colors underline cursor-pointer"
-            >
-              Termos de Uso
-            </button>
-
-            <button
-              onClick={scrollToTop}
-              className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 transition-colors"
-              aria-label="Voltar ao topo da página"
-            >
-              <ArrowUp className="w-3.5 h-3.5" />
-            </button>
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4">
+            <p>
+              © {currentYear} {BRAND.name}. Todos os direitos reservados.
+            </p>
+            <span className="hidden sm:inline text-slate-700">•</span>
+            <div className="flex gap-4">
+              <button
+                type="button"
+                onClick={() => setModalType('privacy')}
+                className="hover:text-slate-200 transition-colors underline-offset-2 hover:underline cursor-pointer"
+              >
+                Política de Privacidade
+              </button>
+              <button
+                type="button"
+                onClick={() => setModalType('terms')}
+                className="hover:text-slate-200 transition-colors underline-offset-2 hover:underline cursor-pointer"
+              >
+                Termos de Uso
+              </button>
+            </div>
           </div>
+
+          <button
+            type="button"
+            onClick={scrollToTop}
+            id="btn-back-to-top"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition-all text-xs"
+            aria-label="Voltar ao topo da página"
+          >
+            <span>Voltar ao topo</span>
+            <ArrowUp className="w-3.5 h-3.5" />
+          </button>
         </div>
       </Container>
 
-      {/* Legal Information Modal */}
-      {legalModal && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150"
-        >
-          <div className="relative w-full max-w-2xl bg-[#081224] border border-slate-700 rounded-2xl p-6 sm:p-8 shadow-2xl max-h-[85vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
-              <div className="flex items-center gap-2 text-white font-bold text-lg font-display">
-                <FileText className="w-5 h-5 text-blue-400" />
-                <span>
-                  {legalModal === 'privacy' ? 'Política de Privacidade' : 'Termos de Uso'}
-                </span>
+      {/* Modal for Privacy Policy / Terms */}
+      {modalType && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-[#091322] border border-slate-800 rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative max-h-[85vh] overflow-y-auto">
+            <button
+              type="button"
+              onClick={() => setModalType(null)}
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+              aria-label="Fechar modal"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                <FileText className="w-4 h-4" />
               </div>
-              <button
-                onClick={() => setLegalModal(null)}
-                className="p-1.5 text-slate-400 hover:text-white rounded-lg bg-slate-900 border border-slate-800"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <h3 className="text-lg font-bold text-white font-display">
+                {modalType === 'privacy' ? 'Política de Privacidade' : 'Termos de Uso'}
+              </h3>
             </div>
 
-            <div className="space-y-4 text-xs sm:text-sm text-slate-300 leading-relaxed">
-              {legalModal === 'privacy' ? (
+            <div className="text-sm text-slate-300 space-y-3 leading-relaxed">
+              {modalType === 'privacy' ? (
                 <>
                   <p>
-                    A <strong>CF Web Studio</strong> respeita a privacidade de seus visitantes e clientes. Esta política descreve como tratamos as informações fornecidas por meio de nossos formulários e canais de contato.
+                    A <strong>CF Web Studio</strong> valoriza sua privacidade. Os dados enviados através dos nossos formulários de contato (nome, e-mail, telefone e detalhes de projeto) são utilizados estritamente para o atendimento comercial e elaboração de propostas.
                   </p>
-                  <h5 className="font-semibold text-white">1. Coleta de Dados</h5>
                   <p>
-                    Coletamos apenas as informações voluntariamente submetidas através do formulário de orçamento (nome, empresa, e-mail, telefone e detalhes do projeto) exclusivamente com a finalidade de elaborar propostas comerciais e prestar atendimento.
+                    Não compartilhamos, vendemos ou alugamos suas informações para terceiros. O armazenamento de dados segue boas práticas de segurança digital e conformidade com a LGPD (Lei Geral de Proteção de Dados).
                   </p>
-                  <h5 className="font-semibold text-white">2. Uso das Informações</h5>
                   <p>
-                    Os dados não são comercializados, compartilhados com terceiros para fins publicitários ou utilizados para qualquer finalidade fora do escopo de relacionamento entre a CF Web Studio e o cliente.
+                    Para dúvidas ou solicitação de exclusão de dados, entre em contato via e-mail: <strong className="text-white">{BRAND.email}</strong>.
                   </p>
                 </>
               ) : (
                 <>
                   <p>
-                    Bem-vindo aos Termos de Uso da <strong>CF Web Studio</strong> (Carlos & Felipe — Web Design e Desenvolvimento).
+                    Todo o conteúdo, layout, marca e códigos desenvolvidos pela <strong>CF Web Studio</strong> neste site são de propriedade intelectual da empresa.
                   </p>
-                  <h5 className="font-semibold text-white">1. Escopo dos Serviços</h5>
                   <p>
-                    A CF Web Studio presta serviços de desenvolvimento de sites institucionais, landing pages, redesign e desenvolvimento web sob medida, mediante proposta comercial e cronograma aprovados.
+                    Os projetos entregues aos clientes seguem escopo e termos contratuais previamente acordados entre as partes, com total transparência quanto a prazos, revisões e propriedade do código.
                   </p>
-                  <h5 className="font-semibold text-white">2. Propriedade Intelectual</h5>
                   <p>
-                    Após a conclusão do projeto e quitação integral do investimento, os direitos de utilização do site desenvolvido são transferidos ao cliente, resguardado o direito de veiculação do projeto no portfólio da agência como case de design.
+                    As informações e estimativas apresentadas no site têm caráter informativo. Propostas oficiais e valores finais são formalizados via contrato individual de prestação de serviços.
                   </p>
                 </>
               )}
             </div>
 
-            <div className="mt-6 pt-4 border-t border-slate-800 text-right">
+            <div className="mt-6 pt-4 border-t border-slate-800 flex justify-end">
               <button
-                onClick={() => setLegalModal(null)}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold"
+                type="button"
+                onClick={() => setModalType(null)}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer"
               >
-                Entendido
+                Entendi e concordo
               </button>
             </div>
           </div>

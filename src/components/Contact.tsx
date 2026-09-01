@@ -1,338 +1,333 @@
-import { useState, FormEvent } from 'react';
-import {
-  Send,
-  MessageSquare,
-  Mail,
-  CheckCircle2,
-  AlertCircle,
-  Clock,
-  ShieldCheck,
-  ArrowUpRight
+import { useState, ChangeEvent, FormEvent } from 'react';
+import { 
+  MessageSquare, 
+  Mail, 
+  Send, 
+  CheckCircle2, 
+  AlertCircle, 
+  Clock, 
+  ShieldCheck, 
+  ArrowUpRight, 
+  Instagram 
 } from 'lucide-react';
 import { Container } from './common/Container';
 import { SectionHeader } from './common/SectionHeader';
 import { Button } from './common/Button';
-import { ContactFormData } from '../types';
 import { BRAND } from '../data/mockData';
 
+interface FormData {
+  name: string;
+  email: string;
+  phone: string;
+  company: string;
+  projectType: string;
+  estimatedBudget: string;
+  message: string;
+}
+
 export function Contact() {
-  const [formData, setFormData] = useState<ContactFormData>({
+  const [formData, setFormData] = useState<FormData>({
     name: '',
-    company: '',
     email: '',
-    whatsapp: '',
-    projectType: 'Site institucional',
-    budgetRange: 'A definir',
+    phone: '',
+    company: '',
+    projectType: 'Site Institucional',
+    estimatedBudget: 'A definir',
     message: ''
   });
 
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const projectTypes = [
-    'Site institucional',
-    'Landing Page',
-    'Redesign',
-    'Projeto personalizado',
-    'Ainda não tenho certeza'
-  ];
-
-  const budgetOptions = [
-    'A definir',
-    'Até R$ 3.000',
-    'R$ 3.000 a R$ 6.000',
-    'R$ 6.000 a R$ 10.000',
-    'Acima de R$ 10.000'
-  ];
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+    setStatus('submitting');
+    setErrorMessage('');
 
-    if (!formData.name.trim() || !formData.email.trim() || !formData.whatsapp.trim()) {
+    // Client-side validation
+    if (!formData.name || !formData.email || !formData.phone) {
       setStatus('error');
-      setErrorMessage('Por favor, preencha os campos obrigatórios (Nome, E-mail e WhatsApp).');
+      setErrorMessage('Por favor, preencha todos os campos obrigatórios (Nome, E-mail e Telefone).');
       return;
     }
 
-    setStatus('submitting');
+    // Direct WhatsApp Handover with formatted message
+    try {
+      const formattedText = encodeURIComponent(
+        `*Novo Contato via Formulário do Site — CF Web Studio*\n\n` +
+        `👤 *Nome:* ${formData.name}\n` +
+        `🏢 *Empresa:* ${formData.company || 'Não informado'}\n` +
+        `✉️ *E-mail:* ${formData.email}\n` +
+        `📱 *WhatsApp:* ${formData.phone}\n` +
+        `🎯 *Tipo de Projeto:* ${formData.projectType}\n` +
+        `💰 *Expectativa de Investimento:* ${formData.estimatedBudget}\n` +
+        `📝 *Detalhes:* ${formData.message || 'Gostaria de uma proposta personalizada.'}`
+      );
 
-    const formattedMsg = `Olá, Carlos & Felipe! Gostaria de um orçamento para o meu projeto:
-*Nome:* ${formData.name || 'Não informado'}
-*Empresa:* ${formData.company || 'Não informado'}
-*E-mail:* ${formData.email || 'Não informado'}
-*WhatsApp:* ${formData.whatsapp || 'Não informado'}
-*Tipo de Projeto:* ${formData.projectType}
-*Faixa de Investimento:* ${formData.budgetRange}
-*Detalhes:* ${formData.message || 'Gostaria de agendar uma conversa sobre meu projeto.'}`;
+      const directWhatsAppUrl = `https://wa.me/${BRAND.phoneRaw}?text=${formattedText}`;
 
-    const url = `https://wa.me/${BRAND.phone}?text=${encodeURIComponent(formattedMsg)}`;
-
-    setTimeout(() => {
-      setStatus('success');
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }, 200);
-  };
-
-  const handleSendViaWhatsApp = () => {
-    const formattedMsg = `Olá, Carlos & Felipe! Gostaria de um orçamento para o meu projeto:
-*Nome:* ${formData.name || 'Não informado'}
-*Empresa:* ${formData.company || 'Não informado'}
-*E-mail:* ${formData.email || 'Não informado'}
-*WhatsApp:* ${formData.whatsapp || 'Não informado'}
-*Tipo de Projeto:* ${formData.projectType}
-*Faixa de Investimento:* ${formData.budgetRange}
-*Detalhes:* ${formData.message || 'Gostaria de agendar uma conversa sobre meu projeto.'}`;
-
-    const url = `https://wa.me/${BRAND.phone}?text=${encodeURIComponent(formattedMsg)}`;
-    window.open(url, '_blank', 'noopener,noreferrer');
+      setTimeout(() => {
+        setStatus('success');
+        window.open(directWhatsAppUrl, '_blank', 'noopener,noreferrer');
+      }, 600);
+    } catch {
+      setStatus('error');
+      setErrorMessage('Ocorreu um erro ao processar o formulário. Por favor, entre em contato direto pelo WhatsApp.');
+    }
   };
 
   return (
-    <section id="contato" className="py-20 md:py-32 relative bg-[#040813] border-t border-slate-800/60">
-      <Container>
+    <section id="contato" className="py-20 sm:py-28 relative overflow-hidden bg-[#040813]">
+      {/* Decorative Glow */}
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+
+      <Container className="relative z-10">
         <SectionHeader
           badge="Inicie seu Projeto"
-          title="Conte sobre o seu projeto."
-          subtitle="Preencha as informações abaixo para receber uma análise estratégica e uma proposta alinhada ao seu momento."
+          title="Pronto para levar a presença digital da sua empresa para outro nível?"
+          description="Preencha o formulário abaixo ou fale diretamente conosco pelo WhatsApp. Retornamos com uma estimativa de investimento e cronograma em poucas horas."
+          centered
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start max-w-6xl mx-auto">
-          
-          {/* Left Column: Interactive Form */}
-          <div className="lg:col-span-7 bg-[#081224] border border-slate-800/90 rounded-2xl p-6 sm:p-8 shadow-2xl">
+        <div className="mt-14 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
+          {/* Left Column: Form Card */}
+          <div className="lg:col-span-7 bg-[#081224] border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl relative">
             {status === 'success' ? (
-              <div className="text-center py-10 space-y-4 animate-in fade-in duration-300">
-                <div className="w-14 h-14 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto">
+              <div className="py-12 text-center space-y-4 animate-fadeIn">
+                <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto">
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <h3 className="text-2xl font-bold text-white font-display">
-                  Mensagem estruturada pronta!
+                  Mensagem Encaminhada com Sucesso!
                 </h3>
-                <p className="text-sm text-slate-300 max-w-md mx-auto leading-relaxed">
-                  Obrigado pelo contato, <strong className="text-white">{formData.name}</strong>. O WhatsApp foi aberto com os dados do seu pedido prontos para envio.
+                <p className="text-slate-300 max-w-md mx-auto text-sm leading-relaxed">
+                  Abrimos uma conversa no WhatsApp para você falar diretamente com o Carlos e o Felipe. Se a janela não abriu automaticamente, clique no botão abaixo.
                 </p>
-
-                <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-center gap-3">
-                  <Button
-                    variant="primary"
-                    size="md"
-                    onClick={handleSendViaWhatsApp}
-                    className="bg-emerald-600 hover:bg-emerald-500 border-emerald-400/40 text-white"
-                    icon={<MessageSquare className="w-4 h-4" />}
-                    iconPosition="left"
+                <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-center">
+                  <a
+                    href={BRAND.whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block"
                   >
-                    Reabrir no WhatsApp
-                  </Button>
-                </div>
-
-                <div className="pt-2">
-                  <button
+                    <Button variant="whatsapp" size="md" icon={<MessageSquare className="w-4 h-4" />}>
+                      Abrir WhatsApp Direto
+                    </Button>
+                  </a>
+                  <Button
+                    variant="outline"
+                    size="md"
                     onClick={() => {
                       setStatus('idle');
                       setFormData({
                         name: '',
-                        company: '',
                         email: '',
-                        whatsapp: '',
-                        projectType: 'Site institucional',
-                        budgetRange: 'A definir',
+                        phone: '',
+                        company: '',
+                        projectType: 'Site Institucional',
+                        estimatedBudget: 'A definir',
                         message: ''
                       });
                     }}
-                    className="text-xs text-slate-400 hover:text-white underline p-2"
                   >
-                    Enviar outro projeto
-                  </button>
+                    Enviar Outra Mensagem
+                  </Button>
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Name */}
+                  <div className="space-y-1.5">
+                    <label htmlFor="name" className="block text-xs font-semibold text-slate-200">
+                      Seu Nome Completo *
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      required
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder="Ex: João da Silva"
+                      className="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-700/80 text-white placeholder-slate-500 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+                    />
+                  </div>
+
+                  {/* Phone / WhatsApp */}
+                  <div className="space-y-1.5">
+                    <label htmlFor="phone" className="block text-xs font-semibold text-slate-200">
+                      WhatsApp com DDD *
+                    </label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      required
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="Ex: (11) 99999-9999"
+                      className="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-700/80 text-white placeholder-slate-500 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Email */}
+                  <div className="space-y-1.5">
+                    <label htmlFor="email" className="block text-xs font-semibold text-slate-200">
+                      E-mail Corporativo *
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      required
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="Ex: contato@suaempresa.com.br"
+                      className="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-700/80 text-white placeholder-slate-500 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+                    />
+                  </div>
+
+                  {/* Company */}
+                  <div className="space-y-1.5">
+                    <label htmlFor="company" className="block text-xs font-semibold text-slate-200">
+                      Nome da Sua Empresa / Ramo
+                    </label>
+                    <input
+                      type="text"
+                      id="company"
+                      name="company"
+                      value={formData.company}
+                      onChange={handleChange}
+                      placeholder="Ex: Silveira Advocacia"
+                      className="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-700/80 text-white placeholder-slate-500 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Project Type */}
+                  <div className="space-y-1.5">
+                    <label htmlFor="projectType" className="block text-xs font-semibold text-slate-200">
+                      Qual tipo de projeto você precisa?
+                    </label>
+                    <select
+                      id="projectType"
+                      name="projectType"
+                      value={formData.projectType}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-700/80 text-white text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all cursor-pointer"
+                    >
+                      <option value="Site Institucional">Site Institucional de Alto Padrão</option>
+                      <option value="Landing Page de Conversão">Landing Page de Alta Conversão</option>
+                      <option value="Redesign / Modernização">Redesign de Site Existente</option>
+                      <option value="Aplicação / Sistema Web">Solução Web / Painel Sob Medida</option>
+                      <option value="Outro / Consultoria">Outro tipo de projeto</option>
+                    </select>
+                  </div>
+
+                  {/* Budget */}
+                  <div className="space-y-1.5">
+                    <label htmlFor="estimatedBudget" className="block text-xs font-semibold text-slate-200">
+                      Expectativa de Investimento
+                    </label>
+                    <select
+                      id="estimatedBudget"
+                      name="estimatedBudget"
+                      value={formData.estimatedBudget}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-700/80 text-white text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all cursor-pointer"
+                    >
+                      <option value="A definir">Ainda estou avaliando</option>
+                      <option value="R$ 1.500 a R$ 3.000">R$ 1.500 a R$ 3.000</option>
+                      <option value="R$ 3.000 a R$ 6.000">R$ 3.000 a R$ 6.000</option>
+                      <option value="Acima de R$ 6.000">Acima de R$ 6.000</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Message */}
+                <div className="space-y-1.5">
+                  <label htmlFor="message" className="block text-xs font-semibold text-slate-200">
+                    Conte um pouco sobre o projeto e seus objetivos
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    rows={4}
+                    value={formData.message}
+                    onChange={handleChange}
+                    placeholder="Ex: Queremos renovar nosso site para transmitir mais confiança e receber mais orçamentos qualificados pelo WhatsApp..."
+                    className="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-700/80 text-white placeholder-slate-500 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all resize-none"
+                  />
+                </div>
+
                 {status === 'error' && (
-                  <div className="p-3 rounded-lg bg-red-950/50 border border-red-500/30 text-red-300 text-xs flex items-center gap-2">
+                  <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center gap-2.5 text-rose-400 text-xs">
                     <AlertCircle className="w-4 h-4 shrink-0" />
                     <span>{errorMessage}</span>
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Nome */}
-                  <div>
-                    <label htmlFor="contact-name" className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Seu Nome <span className="text-blue-400">*</span>
-                    </label>
-                    <input
-                      id="contact-name"
-                      type="text"
-                      required
-                      placeholder="Ex: Carlos Eduardo"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-lg bg-[#040813] border border-slate-700 text-white text-sm placeholder:text-slate-500 focus:border-blue-500 focus:outline-none transition-colors"
-                    />
-                  </div>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="lg"
+                  disabled={status === 'submitting'}
+                  className="w-full text-base font-semibold shadow-lg shadow-blue-600/25"
+                  icon={<Send className="w-4 h-4" />}
+                >
+                  {status === 'submitting' ? 'Processando envio...' : 'Solicitar Orçamento sem Compromisso'}
+                </Button>
 
-                  {/* Empresa */}
-                  <div>
-                    <label htmlFor="contact-company" className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Nome da Empresa / Profissão
-                    </label>
-                    <input
-                      id="contact-company"
-                      type="text"
-                      placeholder="Ex: Pizzaria Forno Nobre, Barber Club..."
-                      value={formData.company}
-                      onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-lg bg-[#040813] border border-slate-700 text-white text-sm placeholder:text-slate-500 focus:border-blue-500 focus:outline-none transition-colors"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* E-mail */}
-                  <div>
-                    <label htmlFor="contact-email" className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      E-mail Corporativo <span className="text-blue-400">*</span>
-                    </label>
-                    <input
-                      id="contact-email"
-                      type="email"
-                      required
-                      placeholder="contato@suaempresa.com.br"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-lg bg-[#040813] border border-slate-700 text-white text-sm placeholder:text-slate-500 focus:border-blue-500 focus:outline-none transition-colors"
-                    />
-                  </div>
-
-                  {/* WhatsApp */}
-                  <div>
-                    <label htmlFor="contact-whatsapp" className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      WhatsApp com DDD <span className="text-blue-400">*</span>
-                    </label>
-                    <input
-                      id="contact-whatsapp"
-                      type="tel"
-                      required
-                      placeholder="(11) 99999-9999"
-                      value={formData.whatsapp}
-                      onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-lg bg-[#040813] border border-slate-700 text-white text-sm placeholder:text-slate-500 focus:border-blue-500 focus:outline-none transition-colors"
-                    />
-                  </div>
-                </div>
-
-                {/* Tipo de projeto */}
-                <div>
-                  <label htmlFor="contact-project-type" className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    Tipo de Projeto
-                  </label>
-                  <select
-                    id="contact-project-type"
-                    value={formData.projectType}
-                    onChange={(e) => setFormData({ ...formData, projectType: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-lg bg-[#040813] border border-slate-700 text-white text-sm focus:border-blue-500 focus:outline-none transition-colors"
-                  >
-                    {projectTypes.map((type) => (
-                      <option key={type} value={type} className="bg-[#081224] text-white">
-                        {type}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Faixa de investimento (opcional) */}
-                <div>
-                  <label htmlFor="contact-budget" className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    Faixa de Investimento Estimada (Opcional)
-                  </label>
-                  <select
-                    id="contact-budget"
-                    value={formData.budgetRange}
-                    onChange={(e) => setFormData({ ...formData, budgetRange: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-lg bg-[#040813] border border-slate-700 text-white text-sm focus:border-blue-500 focus:outline-none transition-colors"
-                  >
-                    {budgetOptions.map((opt) => (
-                      <option key={opt} value={opt} className="bg-[#081224] text-white">
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Mensagem */}
-                <div>
-                  <label htmlFor="contact-message" className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    Detalhes do Projeto / Objetivos
-                  </label>
-                  <textarea
-                    id="contact-message"
-                    rows={4}
-                    placeholder="Conte um pouco sobre as páginas necessárias, referências visuais que gosta ou prazos que pretende atender..."
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-lg bg-[#040813] border border-slate-700 text-white text-sm placeholder:text-slate-500 focus:border-blue-500 focus:outline-none transition-colors resize-y"
-                  />
-                </div>
-
-                {/* Action Buttons */}
-                <div className="pt-2">
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    size="lg"
-                    disabled={status === 'submitting'}
-                    className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-3.5 rounded-xl shadow-lg shadow-blue-600/20"
-                    icon={<Send className="w-4 h-4" />}
-                  >
-                    {status === 'submitting' ? 'Preparando WhatsApp...' : 'Enviar projeto'}
-                  </Button>
-                </div>
+                <p className="text-center text-[11px] text-slate-400">
+                  🔒 Seus dados estão seguros e não compartilhamos com terceiros.
+                </p>
               </form>
             )}
           </div>
 
-          {/* Right Column: Direct Handover & Guarantees */}
+          {/* Right Column: Direct Contacts & Channels */}
           <div className="lg:col-span-5 space-y-6">
-            
-            {/* Direct Email Card */}
-            <div className="p-7 rounded-2xl bg-[#091427] border border-blue-500/30 shadow-xl relative overflow-hidden">
+            {/* Direct Instagram Card */}
+            <div className="p-7 rounded-2xl bg-[#091427] border border-pink-500/30 shadow-xl relative overflow-hidden group">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-500/40 text-blue-400 flex items-center justify-center">
-                  <Mail className="w-5 h-5" />
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-pink-600/20 group-hover:scale-105 transition-transform">
+                  <Instagram className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="text-white font-bold text-base font-display">
-                    Contato por E-mail
+                    Siga no Instagram
                   </h3>
-                  <p className="text-xs text-slate-400">{BRAND.email}</p>
+                  <p className="text-xs text-pink-400 font-medium">{BRAND.instagramDisplay}</p>
                 </div>
               </div>
 
               <p className="text-sm text-slate-300 leading-relaxed">
-                Envie briefings completos, arquivos em anexo ou propostas de parceria comercial direto para a nossa caixa de entrada.
+                Acompanhe os bastidores de desenvolvimento, novidades, dicas de design e os projetos mais recentes que colocamos no ar.
               </p>
 
               <div className="mt-6">
                 <a
-                  href={`mailto:${BRAND.email}?subject=${encodeURIComponent('[Contato CF Web Studio] Solicitação de Projeto')}&body=${encodeURIComponent(`Olá, Carlos & Felipe!
-
-Gostaria de entrar em contato para conversar sobre a criação de um site / landing page para o meu negócio.
-
-Meu nome: 
-Meu WhatsApp: 
-Minha Empresa: 
-Resumo do que preciso: 
-
-Aguardando retorno, obrigado!`)}`}
+                  href={BRAND.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="block"
                 >
                   <Button
                     variant="secondary"
                     size="md"
-                    className="w-full border-blue-500/40 text-blue-300 hover:text-white hover:bg-blue-600/20"
-                    icon={<ArrowUpRight className="w-4 h-4" />}
+                    className="w-full border-pink-500/40 text-pink-300 hover:text-white hover:bg-pink-600/20"
+                    icon={<ArrowUpRight className="w-4 h-4 text-pink-400" />}
                   >
-                    Escrever E-mail Formatado
+                    Ver Perfil no Instagram
                   </Button>
                 </a>
               </div>
@@ -341,19 +336,19 @@ Aguardando retorno, obrigado!`)}`}
             {/* Direct WhatsApp Card */}
             <div className="p-7 rounded-2xl bg-[#091427] border border-emerald-500/30 shadow-xl relative overflow-hidden">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-md">
                   <MessageSquare className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="text-white font-bold text-base font-display">
-                    Prefere conversar no WhatsApp?
+                    Conversa Rápida no WhatsApp
                   </h3>
-                  <p className="text-xs text-slate-400">Atendimento ágil em tempo real</p>
+                  <p className="text-xs text-emerald-400 font-medium">Resposta em poucos minutos</p>
                 </div>
               </div>
 
               <p className="text-sm text-slate-300 leading-relaxed">
-                Tire dúvidas, envie referências visuais ou alinhe detalhes do seu projeto direto com os desenvolvedores.
+                Prefere falar imediatamente? Envie uma mensagem direta e receba atendimento sem intermediários com o Carlos e o Felipe.
               </p>
 
               <div className="mt-6">
@@ -364,38 +359,65 @@ Aguardando retorno, obrigado!`)}`}
                   className="block"
                 >
                   <Button
-                    variant="primary"
+                    variant="whatsapp"
                     size="md"
-                    className="w-full bg-emerald-600 hover:bg-emerald-500 border-emerald-400/40"
+                    className="w-full"
                     icon={<ArrowUpRight className="w-4 h-4" />}
                   >
-                    Chamar no WhatsApp
+                    Iniciar Conversa no WhatsApp
                   </Button>
                 </a>
               </div>
             </div>
 
-            {/* Commitments */}
-            <div className="p-6 rounded-2xl bg-[#081224] border border-slate-800 space-y-4 text-xs text-slate-300">
-              <div className="flex items-start gap-3">
-                <Clock className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+            {/* Direct Email & Details Card */}
+            <div className="p-7 rounded-2xl bg-[#091427] border border-slate-800 space-y-4">
+              <div className="flex items-start gap-3.5">
+                <div className="w-9 h-9 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0 mt-0.5">
+                  <Mail className="w-4 h-4" />
+                </div>
                 <div>
-                  <strong className="text-white block font-medium">Retorno em até 24h</strong>
-                  <span className="text-slate-400">Respondemos solicitações em até 24 horas úteis com diagnóstico prévio.</span>
+                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                    E-mail Oficial
+                  </h4>
+                  <a
+                    href={`mailto:${BRAND.email}`}
+                    className="text-sm font-medium text-white hover:text-blue-400 transition-colors break-all"
+                  >
+                    {BRAND.email}
+                  </a>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
-                <ShieldCheck className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-3.5 pt-2 border-t border-slate-800/80">
+                <div className="w-9 h-9 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0 mt-0.5">
+                  <Clock className="w-4 h-4" />
+                </div>
                 <div>
-                  <strong className="text-white block font-medium">Sigilo Profissional</strong>
-                  <span className="text-slate-400">Seus dados e ideias de projeto são tratados com confidencialidade total.</span>
+                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                    Horário de Atendimento
+                  </h4>
+                  <p className="text-sm text-slate-300">
+                    Segunda a Sexta, das 09h às 19h (Horário de Brasília)
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3.5 pt-2 border-t border-slate-800/80">
+                <div className="w-9 h-9 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0 mt-0.5">
+                  <ShieldCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                    Abrangência
+                  </h4>
+                  <p className="text-sm text-slate-300">
+                    Atendimento e desenvolvimento 100% online para empresas em todo o Brasil.
+                  </p>
                 </div>
               </div>
             </div>
-
           </div>
-
         </div>
       </Container>
     </section>
