@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <!-- Background Glow Filter -->
+    <filter id="cyan-glow" x="-20%" y="-20%" width="140%" height="140%" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="16" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    
+    <!-- Cyan Gradient for C and Glow -->
+    <linearGradient id="cyan-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00D2FF" />
+      <stop offset="50%" stop-color="#00F2FE" />
+      <stop offset="100%" stop-color="#00E5FF" />
+    </linearGradient>
+
+    <!-- Deep Blue Gradient for F -->
+    <linearGradient id="blue-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F2B5C" />
+      <stop offset="100%" stop-color="#0A192F" />
+    </linearGradient>
+
+    <!-- Border Gradient -->
+    <linearGradient id="border-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0A2540" />
+      <stop offset="35%" stop-color="#00B4D8" />
+      <stop offset="70%" stop-color="#00F2FE" />
+      <stop offset="100%" stop-color="#00E5FF" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background Glow Aura -->
+  <rect x="56" y="56" width="400" height="400" rx="90" stroke="#00F2FE" stroke-width="24" opacity="0.35" filter="url(#cyan-glow)" />
+
+  <!-- Outer Rounded Window Container -->
+  <rect x="56" y="56" width="400" height="400" rx="90" fill="#FFFFFF" />
+  <rect x="56" y="56" width="400" height="400" rx="90" stroke="url(#border-grad)" stroke-width="18" />
+
+  <!-- Browser Header Bar Inside -->
+  <g fill="#00B4D8">
+    <!-- Window Controls / Dots -->
+    <rect x="110" y="112" width="16" height="16" rx="3" fill="#00B4D8" />
+    <rect x="134" y="112" width="16" height="16" rx="3" fill="#00B4D8" />
+    <rect x="158" y="112" width="16" height="16" rx="3" fill="#00B4D8" />
+    <!-- Address Bar Outline -->
+    <rect x="190" y="110" width="212" height="20" rx="6" fill="#00B4D8" />
+  </g>
+  <!-- Browser Header Divider -->
+  <line x1="100" y1="146" x2="412" y2="146" stroke="#00B4D8" stroke-width="6" stroke-linecap="round" />
+
+  <!-- Stylized F -->
+  <path d="M120 180 H250 V232 H172 V264 H240 V316 H172 V400 H120 Z" fill="#0F2B5C" />
+
+  <!-- Stylized C -->
+  <path d="M390 230 C370 195 330 178 285 178 C215 178 170 235 170 305 C170 375 215 432 285 432 C335 432 375 410 395 375 L352 342 C338 365 315 380 285 380 C240 380 220 345 220 305 C220 265 240 230 285 230 C315 230 338 245 352 268 Z" fill="url(#cyan-grad)" />
+</svg>
