@@ -1,3 +1,4 @@
+import { BrandLogo } from './common/BrandLogo';
 import { useState, MouseEvent } from 'react';
 import { MessageSquare, ShieldCheck, ArrowUp, X, FileText, Instagram, ExternalLink } from 'lucide-react';
 import { Container } from './common/Container';

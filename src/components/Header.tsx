@@ -1,3 +1,4 @@
+import { BrandLogo } from './common/BrandLogo';
 import { useState, useEffect, MouseEvent } from 'react';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
 import { Button } from './common/Button';
@@ -55,22 +56,7 @@ export function Header() {
       <Container>
         <div className="flex items-center justify-between">
           {/* Brand Logo */}
-          <a
-            href="#inicio"
-            onClick={(e) => handleNavClick(e, '#inicio')}
-            id="brand-logo-link"
-            className="flex flex-col group focus-visible:outline-2 focus-visible:outline-blue-400"
-          >
-            <div className="flex items-center gap-2.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-blue-500 shadow-[0_0_10px_#3b82f6] group-hover:scale-110 transition-transform" />
-              <span className="font-display font-extrabold text-lg sm:text-xl tracking-tight text-white group-hover:text-blue-400 transition-colors">
-                CF WEB STUDIO
-              </span>
-            </div>
-            <span className="text-[10px] tracking-wider text-slate-400 uppercase ml-5">
-              Carlos & Felipe
-            </span>
-          </a>
+          <a href="#inicio" onClick={(e) => handleNavClick(e, '#inicio')} id="brand-logo-link" className="group focus-visible:outline-2 focus-visible:outline-cyan-400"><BrandLogo size="md" /></a>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1 xl:gap-2 px-3 py-1.5 rounded-full bg-slate-900/60 border border-slate-800/80 backdrop-blur-md">
