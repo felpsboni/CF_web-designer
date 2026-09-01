@@ -140,7 +140,7 @@ export function Contact() {
                         message: ''
                       });
                     }}
-                    className="text-xs text-slate-400 hover:text-white underline p-2 cursor-pointer"
+                    className="text-xs text-slate-400 hover:text-white underline p-2"
                   >
                     Enviar outro projeto
                   </button>

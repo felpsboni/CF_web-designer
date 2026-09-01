@@ -1,8 +1,8 @@
-import { BrandLogo } from './common/BrandLogo';
 import { useState, useEffect, MouseEvent } from 'react';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
 import { Button } from './common/Button';
 import { Container } from './common/Container';
+import { BrandLogo } from './common/BrandLogo';
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -56,7 +56,14 @@ export function Header() {
       <Container>
         <div className="flex items-center justify-between">
           {/* Brand Logo */}
-          <a href="#inicio" onClick={(e) => handleNavClick(e, '#inicio')} id="brand-logo-link" className="group focus-visible:outline-2 focus-visible:outline-cyan-400"><BrandLogo size="md" /></a>
+          <a
+            href="#inicio"
+            onClick={(e) => handleNavClick(e, '#inicio')}
+            id="brand-logo-link"
+            className="group focus-visible:outline-2 focus-visible:outline-cyan-400"
+          >
+            <BrandLogo size="md" />
+          </a>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1 xl:gap-2 px-3 py-1.5 rounded-full bg-slate-900/60 border border-slate-800/80 backdrop-blur-md">
