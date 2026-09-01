@@ -2,6 +2,7 @@ import { useState, FormEvent } from 'react';
 import {
   Send,
   MessageSquare,
+  Mail,
   CheckCircle2,
   AlertCircle,
   Clock,
@@ -44,6 +45,44 @@ export function Contact() {
     'Acima de R$ 10.000'
   ];
 
+  const getFormattedEmailUrl = () => {
+    const subject = `[Solicitação de Orçamento] ${formData.projectType} - ${formData.name || 'Novo Cliente'}`;
+    const body = `Olá, equipe da CF Web Studio (Carlos & Felipe)!
+
+Gostaria de solicitar uma análise e orçamento para a criação de um novo projeto web.
+
+📋 DADOS DO SOLICITANTE:
+• Nome: ${formData.name || 'Não informado'}
+• Empresa / Marca: ${formData.company || 'Não informada'}
+• E-mail para retorno: ${formData.email || 'Não informado'}
+• WhatsApp para contato: ${formData.whatsapp || 'Não informado'}
+
+🚀 ESPECIFICAÇÕES DO PROJETO:
+• Tipo de Projeto: ${formData.projectType}
+• Faixa de Investimento Estimada: ${formData.budgetRange}
+
+📝 DETALHES & OBJETIVOS:
+${formData.message || 'Gostaria de agendar uma reunião ou receber uma proposta personalizada para o meu negócio.'}
+
+---
+Mensagem enviada via formulário do site oficial da CF Web Studio.`;
+
+    return `mailto:${BRAND.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
+  const getFormattedWhatsAppUrl = () => {
+    const formattedMsg = `Olá, Carlos & Felipe! Gostaria de um orçamento para o meu projeto:
+*Nome:* ${formData.name || 'Não informado'}
+*Empresa:* ${formData.company || 'Não informado'}
+*E-mail:* ${formData.email || 'Não informado'}
+*WhatsApp:* ${formData.whatsapp || 'Não informado'}
+*Tipo de Projeto:* ${formData.projectType}
+*Faixa de Investimento:* ${formData.budgetRange}
+*Detalhes:* ${formData.message || 'Gostaria de agendar uma conversa sobre meu projeto.'}`;
+
+    return `https://wa.me/${BRAND.phone}?text=${encodeURIComponent(formattedMsg)}`;
+  };
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
@@ -55,24 +94,22 @@ export function Contact() {
 
     setStatus('submitting');
 
-    // Simulate reliable submission & offer direct WhatsApp handover
+    const emailUrl = getFormattedEmailUrl();
+
     setTimeout(() => {
       setStatus('success');
-    }, 600);
+      window.location.href = emailUrl;
+    }, 300);
   };
 
   const handleSendViaWhatsApp = () => {
-    const formattedMsg = `Olá, Carlos & Felipe! Enviei uma solicitação pelo site da CF Web Studio:
-*Nome:* ${formData.name || 'Não informado'}
-*Empresa:* ${formData.company || 'Não informado'}
-*E-mail:* ${formData.email || 'Não informado'}
-*WhatsApp:* ${formData.whatsapp || 'Não informado'}
-*Tipo de Projeto:* ${formData.projectType}
-*Faixa de Investimento:* ${formData.budgetRange}
-*Detalhes:* ${formData.message || 'Gostaria de agendar uma conversa sobre meu projeto.'}`;
-
-    const url = `https://wa.me/5511917301110?text=${encodeURIComponent(formattedMsg)}`;
+    const url = getFormattedWhatsAppUrl();
     window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleSendViaEmail = () => {
+    const url = getFormattedEmailUrl();
+    window.location.href = url;
   };
 
   return (
@@ -94,13 +131,24 @@ export function Contact() {
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <h3 className="text-2xl font-bold text-white font-display">
-                  Mensagem Recebida com Sucesso!
+                  Mensagem Estruturada Pronta!
                 </h3>
                 <p className="text-sm text-slate-300 max-w-md mx-auto leading-relaxed">
-                  Obrigado pelo contato, <strong className="text-white">{formData.name}</strong>. Carlos e Felipe analisarão as informações da sua empresa e retornarão em breve via WhatsApp/e-mail.
+                  Obrigado pelo contato, <strong className="text-white">{formData.name}</strong>. Seu cliente de e-mail foi aberto com todos os detalhes formatados profissionalmente.
                 </p>
 
                 <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <Button
+                    variant="primary"
+                    size="md"
+                    onClick={handleSendViaEmail}
+                    className="bg-blue-600 hover:bg-blue-500 border-blue-400/40 text-white"
+                    icon={<Mail className="w-4 h-4" />}
+                    iconPosition="left"
+                  >
+                    Reabrir E-mail
+                  </Button>
+
                   <Button
                     variant="primary"
                     size="md"
@@ -109,9 +157,11 @@ export function Contact() {
                     icon={<MessageSquare className="w-4 h-4" />}
                     iconPosition="left"
                   >
-                    Agilizar atendimento no WhatsApp
+                    Enviar também no WhatsApp
                   </Button>
+                </div>
 
+                <div className="pt-2">
                   <button
                     onClick={() => {
                       setStatus('idle');
@@ -260,40 +310,95 @@ export function Contact() {
                   />
                 </div>
 
-                {/* Submit button */}
-                <Button
-                  type="submit"
-                  variant="primary"
-                  size="lg"
-                  disabled={status === 'submitting'}
-                  className="w-full"
-                  icon={<Send className="w-4 h-4" />}
-                >
-                  {status === 'submitting' ? 'Enviando projeto...' : 'Enviar projeto'}
-                </Button>
+                {/* Action Buttons */}
+                <div className="space-y-3 pt-2">
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="lg"
+                    disabled={status === 'submitting'}
+                    className="w-full"
+                    icon={<Send className="w-4 h-4" />}
+                  >
+                    {status === 'submitting' ? 'Preparando e-mail...' : 'Enviar por E-mail'}
+                  </Button>
+
+                  <button
+                    type="button"
+                    onClick={handleSendViaWhatsApp}
+                    className="w-full py-2.5 px-4 rounded-lg bg-emerald-950/40 border border-emerald-500/30 hover:border-emerald-500/60 hover:bg-emerald-900/30 text-emerald-300 text-xs font-medium inline-flex items-center justify-center gap-2 transition-all cursor-pointer"
+                  >
+                    <MessageSquare className="w-4 h-4 text-emerald-400" />
+                    <span>Prefere enviar direto pelo WhatsApp? Clique aqui</span>
+                  </button>
+                </div>
               </form>
             )}
           </div>
 
-          {/* Right Column: Direct WhatsApp Alternative & Contact Info */}
+          {/* Right Column: Direct Handover & Guarantees */}
           <div className="lg:col-span-5 space-y-6">
             
-            {/* WhatsApp Alternative Card */}
+            {/* Direct Email Card */}
             <div className="p-7 rounded-2xl bg-[#091427] border border-blue-500/30 shadow-xl relative overflow-hidden">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-500/40 text-blue-400 flex items-center justify-center">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-white font-bold text-base font-display">
+                    Contato Direto por E-mail
+                  </h3>
+                  <p className="text-xs text-slate-400">{BRAND.email}</p>
+                </div>
+              </div>
+
+              <p className="text-sm text-slate-300 leading-relaxed">
+                Envie briefings completos, arquivos em anexo ou propostas de parceria comercial direto para a nossa caixa de entrada.
+              </p>
+
+              <div className="mt-6">
+                <a
+                  href={`mailto:${BRAND.email}?subject=${encodeURIComponent('[Contato CF Web Studio] Solicitação de Projeto')}&body=${encodeURIComponent(`Olá, Carlos & Felipe!
+
+Gostaria de entrar em contato para conversar sobre a criação de um site / landing page para o meu negócio.
+
+Meu nome: 
+Meu WhatsApp: 
+Minha Empresa: 
+Resumo do que preciso: 
+
+Aguardando retorno, obrigado!`)}`}
+                  className="block"
+                >
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    className="w-full border-blue-500/40 text-blue-300 hover:text-white hover:bg-blue-600/20"
+                    icon={<ArrowUpRight className="w-4 h-4" />}
+                  >
+                    Escrever E-mail Formatado
+                  </Button>
+                </a>
+              </div>
+            </div>
+
+            {/* Direct WhatsApp Card */}
+            <div className="p-7 rounded-2xl bg-[#091427] border border-emerald-500/30 shadow-xl relative overflow-hidden">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center">
                   <MessageSquare className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="text-white font-bold text-base font-display">
-                    Prefere conversar diretamente?
+                    Prefere conversar no WhatsApp?
                   </h3>
-                  <p className="text-xs text-slate-400">Atendimento ágil no WhatsApp</p>
+                  <p className="text-xs text-slate-400">Atendimento ágil em tempo real</p>
                 </div>
               </div>
 
               <p className="text-sm text-slate-300 leading-relaxed">
-                Tire dúvidas, envie referências ou alinhe detalhes do seu projeto de forma dinâmica direto com os desenvolvedores.
+                Tire dúvidas, envie referências visuais ou alinhe detalhes do seu projeto direto com os desenvolvedores.
               </p>
 
               <div className="mt-6">
@@ -320,15 +425,15 @@ export function Contact() {
               <div className="flex items-start gap-3">
                 <Clock className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-white block font-medium">Retorno Rápido</strong>
-                  <span className="text-slate-400">Respondemos solicitações em até 24 horas úteis com análise preliminar.</span>
+                  <strong className="text-white block font-medium">Retorno em até 24h</strong>
+                  <span className="text-slate-400">Respondemos solicitações em até 24 horas úteis com diagnóstico prévio.</span>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
                 <ShieldCheck className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-white block font-medium">Sigilo de Informações</strong>
+                  <strong className="text-white block font-medium">Sigilo Profissional</strong>
                   <span className="text-slate-400">Seus dados e ideias de projeto são tratados com confidencialidade total.</span>
                 </div>
               </div>

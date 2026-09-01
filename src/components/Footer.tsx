@@ -1,5 +1,5 @@
 import { useState, MouseEvent } from 'react';
-import { MessageSquare, Instagram, ShieldCheck, ArrowUp, X, FileText } from 'lucide-react';
+import { MessageSquare, ShieldCheck, ArrowUp, X, FileText } from 'lucide-react';
 import { Container } from './common/Container';
 import { BRAND } from '../data/mockData';
 
@@ -91,16 +91,6 @@ export function Footer() {
               >
                 <MessageSquare className="w-4 h-4 text-emerald-400" />
                 <span>Atendimento via WhatsApp</span>
-              </a>
-
-              <a
-                href={BRAND.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-[#081224] border border-slate-800 hover:border-pink-500/50 text-xs text-slate-200 hover:text-white transition-all"
-              >
-                <Instagram className="w-4 h-4 text-pink-400" />
-                <span>Instagram (@cfwebstudio)</span>
               </a>
             </div>
           </div>

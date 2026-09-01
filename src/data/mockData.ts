@@ -6,18 +6,17 @@ import {
   FAQItem
 } from '../types';
 
-export const agencyConfig = {
-  name: 'CF Web Studio & Design',
-  tagline: 'Sites e Landing Pages de Alta Performance para Negócios Locais e Profissionais',
-  whatsapp: '5511917301110',
+export const BRAND = {
+  name: 'CF WEB STUDIO',
+  subtitle: 'Carlos & Felipe — Web Design e Desenvolvimento',
+  phone: '5511917301110',
   phoneDisplay: '(11) 91730-1110',
   whatsappUrl: 'https://wa.me/5511917301110?text=Ol%C3%A1!%20Conheci%20a%20CF%20Web%20Studio%20pelo%20site%20e%20gostaria%20de%20conversar%20sobre%20a%20cria%C3%A7%C3%A3o%20de%20um%20projeto.',
   whatsappFloatingUrl: 'https://wa.me/5511917301110?text=Ol%C3%A1!%20Conheci%20a%20CF%20Web%20Studio%20pelo%20site%20e%20gostaria%20de%20saber%20mais%20sobre%20os%20servi%C3%A7os.',
-  email: 'felpsboni246@gmail.com',
+  email: 'cfwebstudiocarlosfelipe@gmail.com',
   instagram: 'https://instagram.com/cfwebstudio',
   coverage: 'Atendimento online em todo o Brasil.'
 };
-
 export const SERVICES_DATA: ServiceItem[] = [
   {
     id: 'sites-institucionais',
